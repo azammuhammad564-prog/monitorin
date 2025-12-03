@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sensor Monitoring Dashboard</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+
+        h1 { 
+            text-align: center; 
+            margin-bottom: 30px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 750px;
+            margin: auto;
+        }
+
+        .sensor-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px #ccc;
+            text-align: center;
+        }
+
+        .safe {
+            color: green;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .alert {
+            color: red;
+            font-size: 22px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Real-Time Sensor Monitoring</h1>
+
+<div class="grid">
+
+    <div class="sensor-box">
+        <h2>🔥 Flame Sensor</h2>
+        <p id="flame" class="safe">Loading...</p>
+    </div>
+
+    <div class="sensor-box">
+        <h2>💥 Vibration Sensor</h2>
+        <p id="vibration" class="safe">Loading...</p>
+    </div>
+
+    <div class="sensor-box">
+        <h2>🚪 Magnetic Sensor 1 (Pintu)</h2>
+        <p id="mag1" class="safe">Loading...</p>
+    </div>
+
+    <div class="sensor-box">
+        <h2>🪟 Magnetic Sensor 2 (Jendela)</h2>
+        <p id="mag2" class="safe">Loading...</p>
+    </div>
+
+</div>
+
+<script>
+function updateSensor() {
+    fetch("/sensor")
+    .then(res => res.json())
+    .then(data => {
+
+        // Flame
+        document.getElementById("flame").innerHTML = data.flame;
+        document.getElementById("flame").className =
+            (data.flame === "DETECTED") ? "alert" : "safe";
+
+        // Vibration
+        document.getElementById("vibration").innerHTML = data.vibration;
+        document.getElementById("vibration").className =
+            (data.vibration === "DETECTED") ? "alert" : "safe";
+
+        // Magnetic 1
+        document.getElementById("mag1").innerHTML = data.magnetic1;
+        document.getElementById("mag1").className =
+            (data.magnetic1 === "OPEN") ? "alert" : "safe";
+
+        // Magnetic 2
+        document.getElementById("mag2").innerHTML = data.magnetic2;
+        document.getElementById("mag2").className =
+            (data.magnetic2 === "OPEN") ? "alert" : "safe";
+    });
+}
+
+setInterval(updateSensor, 500);
+</script>
+
+</body>
+</html>
