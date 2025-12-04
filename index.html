@@ -50,7 +50,7 @@
 <script>
 async function updateData() {
     try {
-        const res = await fetch("http://10.72.2.2016:5000/sensor");
+        const res = await fetch("http://10.72.2.216:5000/sensor");
         const data = await res.json();
 
         document.getElementById("fire").innerHTML =
