@@ -1,91 +1,70 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Raspberry Pi Sensor Dashboard</title>
-    <style>
-        body {
-            font-family: Arial;
-            background: #f2f2f2;
-            padding: 20px;
-        }
-        .card {
-            background: white;
-            padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 6px #ccc;
-        }
-        .alert { color: red; font-weight: bold; }
-        .safe { color: green; }
-    </style>
+<meta charset="UTF-8">
+<title>Monitoring Sensor Raspberry</title>
+<style>
+    body {
+        font-family: Arial;
+        background: #f5f5f5;
+        text-align: center;
+        padding: 20px;
+    }
+    .box {
+        background: white;
+        padding: 15px;
+        margin: 10px;
+        border-radius: 10px;
+        font-size: 22px;
+        box-shadow: 0 0 10px #ccc;
+    }
+    .alarm {
+        color: red;
+        font-size: 28px;
+        font-weight: bold;
+    }
+</style>
 </head>
 <body>
 
-<h2>🔥 Raspberry Pi Real-Time Sensor Monitoring</h2>
+<h1>Monitoring Sensor Raspberry Pi</h1>
 
-<div class="card">
-    <p>Fire Sensor: <span id="fire"></span></p>
-</div>
-
-<div class="card">
-    <p>Vibration Sensor: <span id="vib"></span></p>
-</div>
-
-<div class="card">
-    <p>Door 1: <span id="door1"></span>
-        (Mute: <span id="mute1"></span>)
-    </p>
-</div>
-
-<div class="card">
-    <p>Door 2: <span id="door2"></span>
-        (Mute: <span id="mute2"></span>)
-    </p>
-</div>
-
-<div class="card">
-    <p>Buzzer Alarm: <span id="alarm"></span></p>
-</div>
+<div class="box" id="fireBox">🔥 Flame: -</div>
+<div class="box" id="vibBox">📳 Vibration: -</div>
+<div class="box" id="door1Box">🚪 Pintu 1: -</div>
+<div class="box" id="door2Box">🚪 Pintu 2: -</div>
+<div class="box alarm" id="alarmBox">Status Alarm: -</div>
 
 <script>
-async function updateData() {
+async function updateSensor() {
     try {
-        const res = await fetch("http://10.72.2.216:5000/sensor");
-        const data = await res.json();
+        let r = await fetch("http://IP_RASPBERRY:5000/sensor");
+        let data = await r.json();
 
-        document.getElementById("fire").innerHTML =
-            data.fire_state ? "<span class='safe'>No Fire</span>" :
-                        "<span class='alert'>FIRE ALERT</span>";
+        document.getElementById("fireBox").innerText =
+            "🔥 Flame: " + (data.fire === 0 ? "Api Terdeteksi!" : "Aman");
 
-        document.getElementById("vib").innerHTML =
-            data.vib_state ? "<span class='safe'>No Vibration</span>" :
-                             "<span class='alert'>VIBRATION ALERT</span>";
+        document.getElementById("vibBox").innerText =
+            "📳 Vibration: " + (data.vibration === 0 ? "Getaran!" : "Aman");
 
-        document.getElementById("door1").innerHTML =
-            data.mag1_state ? "<span class='alert'>OPEN</span>" :
-                         "<span class='safe'>Closed</span>";
+        document.getElementById("door1Box").innerText =
+            "🚪 Pintu 1: " + (data.door1 === 1 ? "Terbuka" : "Tertutup");
 
-        document.getElementById("door2").innerHTML =
-            data.mag2_state ? "<span class='alert'>OPEN</span>" :
-                         "<span class='safe'>Closed</span>";
+        document.getElementById("door2Box").innerText =
+            "🚪 Pintu 2: " + (data.door2 === 1 ? "Terbuka" : "Tertutup");
 
-        document.getElementById("mute1").innerHTML =
-            data.mute_pintu1 ? "ON" : "OFF";
+        document.getElementById("alarmBox").innerText =
+            "Status Alarm: " + (data.alarm ? "MENYALA 🚨" : "Mati");
 
-        document.getElementById("mute2").innerHTML =
-            data.mute_pintu2 ? "ON" : "OFF";
+        document.getElementById("alarmBox").style.color =
+            data.alarm ? "red" : "green";
 
-        document.getElementById("alarm").innerHTML =
-            data.alarm ? "<span class='alert'>ACTIVE</span>" :
-                         "<span class='safe'>OFF</span>";
-
-    } catch (err) {
-        console.log("Connection Error", err);
+    } catch (e) {
+        console.log("Error:", e);
     }
 }
 
-setInterval(updateData, 1000);
-updateData();
+setInterval(updateSensor, 500);
 </script>
 
 </body>
